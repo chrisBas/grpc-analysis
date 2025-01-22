@@ -5,7 +5,10 @@
 ./gen_go_server.sh
 ./gen_grpc_web.sh
 
-# client (JS)
+# envoy
+./run_envoy_in_docker.sh
+
+# client (JS) - only use if you are running the JS client ofcourse
 cd grpc-web/js
 # install dependencies
 npm i
@@ -14,15 +17,19 @@ npm run build
 # host static files (using python http-server)
 npm start
 
+# client (TS) - only use if you are running the TS client ofcourse
+cd grpc-web/ts
+# install dependencies
+npm i
+# run dev server with vite
+npm run dev
+
 # server
 cd go-server
 # install dependencies
 go mod download
 # run server
 go run *.go
-
-# envoy
-./run_envoy_in_docker.sh
 ```
 
 ## References

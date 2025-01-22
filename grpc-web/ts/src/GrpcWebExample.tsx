@@ -7,10 +7,11 @@ const exampleClient = new ExampleClient("http://localhost:8080", null, null);
 export function GrpcWebExample() {
   const [userInput, setUserInput] = useState("echo msg");
   const [grpcResponse, setGrpcResponse] = useState("");
+  const [grpcStreamResponse, setGrpcStreamResponse] = useState<string[]>([]);
 
   return (
     <div>
-      <div style={{ marginBottom: "40px" }}>
+      <div style={{ marginBottom: "30px" }}>
         <input
           type="text"
           value={userInput}
@@ -20,10 +21,10 @@ export function GrpcWebExample() {
         />
       </div>
       <button
-        style={{ marginBottom: "20px" }}
+        style={{ marginBottom: "30px" }}
         onClick={() => {
           const req = new ExampleRequest();
-          req.setMsg("Test");
+          req.setMsg(userInput);
           exampleClient.exampleUnaryCall(req, null, (err, resp) => {
             if (err) {
               console.log({
@@ -42,9 +43,57 @@ export function GrpcWebExample() {
           });
         }}
       >
-        GRPC Unary RPC Example
+        GRPC Unary RPC Call
       </button>
-      <div>{`Response: ${grpcResponse}`}</div>
+      <div
+        style={{ marginBottom: "30px" }}
+      >{`Unary Response: ${grpcResponse}`}</div>
+      <button
+        style={{ marginBottom: "30px" }}
+        onClick={() => {
+          const req = new ExampleRequest();
+          req.setMsg(userInput);
+          const stream = exampleClient.exampleStreamingCall(req);
+          setGrpcStreamResponse([]);
+          stream.on("data", (resp) => {
+            setGrpcStreamResponse((prev) => [...prev, resp.getMsg()]);
+            console.log({
+              fn: "exampleStreamingCall",
+              event: "data",
+              data: resp,
+            });
+          });
+          stream.on("status", (status) => {
+            console.log({
+              fn: "exampleStreamingCall",
+              event: "status",
+              data: status,
+            });
+          });
+          stream.on("error", (err) => {
+            console.log({
+              fn: "exampleStreamingCall",
+              event: "error",
+              data: err,
+            });
+          });
+          stream.on("end", () => {
+            console.log({
+              fn: "exampleStreamingCall",
+              event: "end",
+              data: null,
+            });
+          });
+        }}
+      >
+        GRPC Stream RPC Call
+      </button>
+      <div style={{ marginBottom: "30px" }}>
+        <div>{`Stream Response:`}</div>
+        {grpcStreamResponse.map((res, i) => {
+          return <div key={i}>{res}</div>;
+        })}
+      </div>
     </div>
   );
 }
