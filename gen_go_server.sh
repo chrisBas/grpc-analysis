@@ -1,6 +1,7 @@
 #!/bin/bash
 
 mkdir -p go-server/pb/example
+rm -f go-server/pb/example/*.go
 protoc -I=proto example.proto \
     --go_out=go-server --go-grpc_out=go-server \
     --go_opt=module=server --go-grpc_opt=module=server \
