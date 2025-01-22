@@ -24,3 +24,11 @@ go run *.go
 # envoy
 ./run_envoy_in_docker.sh
 ```
+
+## References
+
+- [grpc-web](https://github.com/grpc/grpc-web)
+- [grpc-web helloworld](https://github.com/grpc/grpc-web/tree/master/net/grpc/gateway/examples/helloworld)
+- [grpc-web typescript](https://github.com/grpc/grpc-web/blob/master/net/grpc/gateway/examples/echo/ts-example/README.md)
+- [grpc-web vite](https://github.com/a2not/vite-grpc-web)
+- _neat to know_ [multiple go versions](https://go.dev/doc/manage-install)
