@@ -1,4 +1,32 @@
-# Running Locally
+# Running grpc-gateway Locally
+
+```
+# Generate Protobuf files for go and js
+./gen_go_server.sh
+./gen_grpc_web.sh
+
+# gateway proxy
+cd grpc-gateway/go-proxy
+# install dependencies
+go mod download
+go run main.go
+
+# client (TS) - only use if you are running the TS client ofcourse
+cd grpc-gateway/ts
+# install dependencies
+npm i
+# run dev server with vite
+npm run dev
+
+# server
+cd go-server
+# install dependencies
+go mod download
+# run server
+go run *.go
+```
+
+# Running grpc-web-web Locally
 
 ```
 # Generate Protobuf files for go and js
