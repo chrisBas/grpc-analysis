@@ -53,6 +53,13 @@ npm i
 # run dev server with vite
 npm run dev
 
+# client (TS2) - only use if you are running the TS2 client ofcourse
+cd grpc-web/ts2
+# install dependencies
+npm i
+# run dev server with vite
+npm run dev
+
 # server
 cd go-server
 # install dependencies
