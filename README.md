@@ -49,9 +49,9 @@ npm start
 # client (TS) - only use if you are running the TS client ofcourse
 cd grpc-web/ts
 # install dependencies
-npm i
-# run dev server with vite
-npm run dev
+yarn install
+# run dev server with vite (yarn is needed b/c we use 'link:' in package.json)
+yarn run dev
 
 # client (TS2) - only use if you are running the TS2 client ofcourse
 cd grpc-web/ts2

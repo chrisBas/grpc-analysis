@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"server/pb/common"
 	"server/pb/example"
 	"time"
 
@@ -51,3 +52,34 @@ func (* exampleServer) ExampleStreamingCall(req *example.ExampleRequest, stream 
 	// return nil to close stream successfully
 	return nil
 }
+
+func (* exampleServer) CommonUnaryCall(ctx context.Context, req *common.CommonRequest) (*common.CommonReply, error) {
+	return &common.CommonReply{Msg: "echo: " + req.Msg, Type: req.Type}, nil
+}
+func (* exampleServer) CommonStreamingCall(req *common.CommonRequest, stream example.Example_CommonStreamingCallServer) error {
+	ctx := stream.Context()
+	if header, ok := metadata.FromIncomingContext(ctx); ok {
+		if v, ok := header["error"]; ok {
+			return status.Errorf(codes.InvalidArgument, "error metadata: %v", v)
+		}
+	}
+	// this will be sent immediately
+	err := stream.SendHeader(metadata.New(map[string]string{
+		"REQUEST_ID": uuid.NewString(),
+	}))
+	if err != nil {
+		return nil
+	}
+
+	for i := 1; i <= 5; i++ {
+		stream.Send(&common.CommonReply{Msg: fmt.Sprintf("echo: %s (%d)", req.Msg, i), Type: req.Type})
+		time.Sleep(time.Millisecond * 500)
+	}
+
+	// not needed, but will be send with the final response code when the stream is closed
+	stream.SetTrailer(metadata.New(map[string]string{
+		"status": "ok",
+	}))
+
+	// return nil to close stream successfully
+	return nil}

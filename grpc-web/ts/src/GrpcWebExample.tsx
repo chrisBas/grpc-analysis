@@ -1,4 +1,4 @@
-import { ExampleRequest } from "generated";
+import { CommonRequest, CommonType } from "generated";
 import { ExampleClient } from "generated/ExampleServiceClientPb";
 import { useState } from "react";
 
@@ -23,19 +23,20 @@ export function GrpcWebExample() {
       <button
         style={{ marginBottom: "30px" }}
         onClick={() => {
-          const req = new ExampleRequest();
+          const req = new CommonRequest();
           req.setMsg(userInput);
-          exampleClient.exampleUnaryCall(req, null, (err, resp) => {
+          req.setType(CommonType.JSON);
+          exampleClient.commonUnaryCall(req, null, (err, resp) => {
             if (err) {
               console.log({
-                fn: "exampleUnaryCall",
+                fn: "commonUnaryCall",
                 event: "error",
                 data: err,
               });
               return;
             }
             console.log({
-              fn: "exampleUnaryCall",
+              fn: "commonUnaryCall",
               event: "success",
               data: resp.toObject(),
             });
@@ -51,35 +52,36 @@ export function GrpcWebExample() {
       <button
         style={{ marginBottom: "30px" }}
         onClick={() => {
-          const req = new ExampleRequest();
+          const req = new CommonRequest();
           req.setMsg(userInput);
-          const stream = exampleClient.exampleStreamingCall(req);
+          req.setType(CommonType.JSON);
+          const stream = exampleClient.commonStreamingCall(req);
           setGrpcStreamResponse([]);
           stream.on("data", (resp) => {
             setGrpcStreamResponse((prev) => [...prev, resp.getMsg()]);
             console.log({
-              fn: "exampleStreamingCall",
+              fn: "commonStreamingCall",
               event: "data",
-              data: resp,
+              data: resp.toObject(),
             });
           });
           stream.on("status", (status) => {
             console.log({
-              fn: "exampleStreamingCall",
+              fn: "commonStreamingCall",
               event: "status",
               data: status,
             });
           });
           stream.on("error", (err) => {
             console.log({
-              fn: "exampleStreamingCall",
+              fn: "commonStreamingCall",
               event: "error",
               data: err,
             });
           });
           stream.on("end", () => {
             console.log({
-              fn: "exampleStreamingCall",
+              fn: "commonStreamingCall",
               event: "end",
               data: null,
             });

@@ -1,6 +1,6 @@
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { useState } from "react";
-import { ExampleRequest } from "./generated/example";
+import { CommonRequest, CommonType } from "./generated/common";
 import { ExampleClient } from "./generated/example.client";
 
 const transport = new GrpcWebFetchTransport({
@@ -27,13 +27,13 @@ export function GrpcWebExample() {
       <button
         style={{ marginBottom: "30px" }}
         onClick={() => {
-          const req: ExampleRequest = { msg: userInput };
+          const req: CommonRequest = { msg: userInput, type: CommonType.TEXT };
           exampleClient
-            .exampleUnaryCall(req)
+            .commonUnaryCall(req)
             .then((resp) => {
               const reply = resp.response;
               console.log({
-                fn: "exampleUnaryCall",
+                fn: "commonUnaryCall",
                 event: "success",
                 data: reply,
               });
@@ -41,7 +41,7 @@ export function GrpcWebExample() {
             })
             .catch((err) => {
               console.log({
-                fn: "exampleUnaryCall",
+                fn: "commonUnaryCall",
                 event: "error",
                 data: err,
               });
@@ -56,12 +56,12 @@ export function GrpcWebExample() {
       <button
         style={{ marginBottom: "30px" }}
         onClick={() => {
-          const req: ExampleRequest = { msg: userInput };
-          const stream = exampleClient.exampleStreamingCall(req);
+          const req: CommonRequest = { msg: userInput, type: CommonType.TEXT };
+          const stream = exampleClient.commonStreamingCall(req);
           setGrpcStreamResponse([]);
           stream.responses.onMessage((resp) => {
             console.log({
-              fn: "exampleStreamingCall",
+              fn: "commonStreamingCall",
               event: "data",
               data: resp,
             });
@@ -69,14 +69,14 @@ export function GrpcWebExample() {
           });
           stream.responses.onComplete(() => {
             console.log({
-              fn: "exampleStreamingCall",
+              fn: "commonStreamingCall",
               event: "end",
               data: null,
             });
           });
           stream.responses.onError((err) => {
             console.log({
-              fn: "exampleStreamingCall",
+              fn: "commonStreamingCall",
               event: "error",
               data: err,
             });

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package common;
+
+enum CommonType {
+    TEXT = 0;
+    JSON = 1;
+    XML = 2;
+    BINARY = 3;
+}
+
+message CommonRequest {
+    string msg = 1;
+    CommonType type = 2;
+}
+  
+message CommonReply {
+    string msg = 1;
+    CommonType type = 2;
+}

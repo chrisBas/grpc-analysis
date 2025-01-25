@@ -2,6 +2,7 @@ const {
   ExampleRequest,
   ExampleResponse,
 } = require("./pb/example/example_pb.js");
+const { CommonRequest, CommonType } = require("./pb/example/common_pb.js");
 const { ExampleClient } = require("./pb/example/example_grpc_web_pb.js");
 
 var client = new ExampleClient("http://" + window.location.hostname + ":8080", null, null);
@@ -12,37 +13,39 @@ const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
 enableDevTools([client]);
 
 function makeUnaryRequest(msg) {
-  var request = new ExampleRequest();
+  var request = new CommonRequest();
   request.setMsg(msg);
+  request.setType(CommonType.JSON);
   
-  client.exampleUnaryCall(request, {}, (err, resp) => {
+  client.commonUnaryCall(request, {}, (err, resp) => {
     if (err) {
-      console.log({fn: 'exampleUnaryCall', event: 'error', data: err})
+      console.log({fn: 'commonUnaryCall', event: 'error', data: err})
     } else {
-      console.log({fn: 'exampleUnaryCall', event: 'success', data: resp.toObject()})
+      console.log({fn: 'commonUnaryCall', event: 'success', data: resp.toObject()})
     }
   });
 }
 makeUnaryRequest("test")
 
 function makeStreamingRequest(msg) {
-  var streamRequest = new ExampleRequest();
+  var streamRequest = new CommonRequest();
   streamRequest.setMsg(msg);
+  streamRequest.setType(CommonType.JSON);
   
-  var stream = client.exampleStreamingCall(streamRequest, {});
+  var stream = client.commonStreamingCall(streamRequest, {});
   stream.on("data", (resp) => {
-    console.log({fn: 'exampleStreamingCall', event: 'data', data: resp.toObject()})
+    console.log({fn: 'commonStreamingCall', event: 'data', data: resp.toObject()})
   });
   stream.on("end", (resp) => {
     // TODO: try and get this to trigger AND check if other events exist (beyond data, status, error, and maybe end)
-    console.log({fn: 'exampleStreamingCall', event: 'end', data: resp})
+    console.log({fn: 'commonStreamingCall', event: 'end', data: resp})
   });
   stream.on("status", (resp) => {
     // resp will be like: {code: 0, details: "", metadata: {'status': 'ok'}} where code 0 is OK (the metadata.status is app-specific and not part of the grpc-web spec)
-    console.log({fn: 'exampleStreamingCall', event: 'status', data: resp})
+    console.log({fn: 'commonStreamingCall', event: 'status', data: resp})
   });
   stream.on("error", (err) => {
-    console.log({fn: 'exampleStreamingCall', event: 'error', data: err})
+    console.log({fn: 'commonStreamingCall', event: 'error', data: err})
   });  
 }
 makeStreamingRequest("test")

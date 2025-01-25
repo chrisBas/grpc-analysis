@@ -1,3 +1,4 @@
 # Auto-Generated Files
-*.ts
-*.js
+*_pb.d.ts
+*_pb.js
+*Pb.ts

@@ -10,7 +10,9 @@ protoc -I proto \
     --go-grpc_opt module=server \
     --go_opt Mexample.proto=server/pb/example \
     --go-grpc_opt Mexample.proto=server/pb/example \
-    example.proto
+    --go_opt Mcommon.proto=server/pb/common \
+    --go-grpc_opt Mcommon.proto=server/pb/common \
+    example.proto common.proto
 
 # grpc stubs
 mkdir -p grpc-gateway/go-proxy/pb/example
@@ -22,7 +24,9 @@ protoc -I proto \
     --go-grpc_opt module=gateway \
     --go_opt Mexample.proto=gateway/pb/example \
     --go-grpc_opt Mexample.proto=gateway/pb/example \
-    example.proto
+    --go_opt Mcommon.proto=gateway/pb/common \
+    --go-grpc_opt Mcommon.proto=gateway/pb/common \
+    example.proto common.proto
 # gateway stubs
 mkdir -p grpc-gateway/go-proxy/pb/gateway
 rm -f grpc-gateway/go-proxy/pb/gateway/*.go
@@ -32,7 +36,8 @@ protoc -I proto \
     --grpc-gateway_opt generate_unbound_methods=true \
     --grpc-gateway_opt standalone=true \
     --grpc-gateway_opt Mexample.proto=gateway/pb/example \
-    example.proto
+    --grpc-gateway_opt Mcommon.proto=gateway/pb/common \
+    example.proto common.proto
 # openapi stubs
 mkdir -p pb/openapi
 rm -f pb/openapi/*.json
@@ -43,4 +48,5 @@ protoc -I proto \
     --openapiv2_opt allow_merge=true \
     --openapiv2_opt merge_file_name=api \
     --openapiv2_opt Mexample.proto=gateway/pb/example \
-    example.proto
+    --openapiv2_opt Mcommon.proto=gateway/pb/common \
+    example.proto common.proto

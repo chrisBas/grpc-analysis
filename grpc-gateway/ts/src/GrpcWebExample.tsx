@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Observable } from "rxjs";
 import {
   Api,
-  ExampleExampleRequest,
+  CommonCommonRequest,
+  CommonCommonType,
   HttpResponse,
   RequestParams,
   RpcStatus,
@@ -11,8 +12,8 @@ import {
 const exampleClient = new Api({
   baseUrl: "http://localhost:8080",
 });
-const exampleStreamingCall = streamToObservable(
-  exampleClient.exampleExample.exampleExampleStreamingCall
+const commonStreamingCall = streamToObservable(
+  exampleClient.exampleExample.exampleCommonStreamingCall
 );
 
 export function GrpcWebExample() {
@@ -34,13 +35,16 @@ export function GrpcWebExample() {
       <button
         style={{ marginBottom: "30px" }}
         onClick={() => {
-          const req: ExampleExampleRequest = { msg: userInput };
+          const req: CommonCommonRequest = {
+            msg: userInput,
+            type: CommonCommonType.JSON,
+          };
           exampleClient.exampleExample
-            .exampleExampleUnaryCall(req)
+            .exampleCommonUnaryCall(req)
             .then((resp) => resp.data)
             .then((resp) => {
               console.log({
-                fn: "exampleUnaryCall",
+                fn: "commonUnaryCall",
                 event: "success",
                 data: resp,
               });
@@ -48,7 +52,7 @@ export function GrpcWebExample() {
             })
             .catch((err) => {
               console.log({
-                fn: "exampleUnaryCall",
+                fn: "commonUnaryCall",
                 event: "error",
                 data: err,
               });
@@ -63,27 +67,30 @@ export function GrpcWebExample() {
       <button
         style={{ marginBottom: "30px" }}
         onClick={() => {
-          const req: ExampleExampleRequest = { msg: userInput };
+          const req: CommonCommonRequest = {
+            msg: userInput,
+            type: CommonCommonType.JSON,
+          };
           setGrpcStreamResponse([]);
-          exampleStreamingCall(req).subscribe({
+          commonStreamingCall(req).subscribe({
             next: (resp) => {
               setGrpcStreamResponse((prev) => [...prev, resp?.msg || ""]);
               console.log({
-                fn: "exampleStreamingCall",
+                fn: "commonStreamingCall",
                 event: "data",
                 data: resp,
               });
             },
             complete: () => {
               console.log({
-                fn: "exampleStreamingCall",
+                fn: "commonStreamingCall",
                 event: "end",
                 data: null,
               });
             },
             error: (err) => {
               console.log({
-                fn: "exampleStreamingCall",
+                fn: "commonStreamingCall",
                 event: "error",
                 data: err,
               });

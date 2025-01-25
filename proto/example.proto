@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package example;
 
+import "common.proto";
+
 message ExampleRequest {
     string msg = 1;
 }
@@ -13,4 +15,7 @@ message ExampleReply {
 service Example {
   rpc ExampleUnaryCall(ExampleRequest) returns (ExampleReply);
   rpc ExampleStreamingCall(ExampleRequest) returns (stream ExampleReply);
+  
+  rpc CommonUnaryCall(common.CommonRequest) returns (common.CommonReply);
+  rpc CommonStreamingCall(common.CommonRequest) returns (stream common.CommonReply);
 }
