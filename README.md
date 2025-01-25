@@ -1,3 +1,12 @@
+# Analysis
+
+| GRPC SPEC | Language | Description | Descriptive Analysis | Performance | Streaming |
+| --- | --- | --- | --- | --- | --- |
+| grpc-web | JS | - | I prefer TS to JS | TBD | TBD |
+| grpc-web | TS | using protoc grpc-web | Annoying to work with; generated TS has to be in separate Package | TBD | TBD |
+| grpc-web | TS | using protoc protobuf-ts | Good, but requires Envoy Proxy | TBD | TBD |
+| grpc-gateway | TS | - | Good, but requires Grpc-Gateway Proxy | TBD | TBD |
+
 # Running grpc-gateway Locally
 
 ```
