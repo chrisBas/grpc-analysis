@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Observable } from "rxjs";
 import {
   Api,
+  CommonCommonReply,
   CommonCommonRequest,
   CommonCommonType,
   HttpResponse,
@@ -9,6 +10,8 @@ import {
   RpcStatus,
 } from "./pb/api";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LARGE_MESSAGE = "a".repeat(1000000);
 const exampleClient = new Api({
   baseUrl: "http://localhost:8080",
 });
@@ -16,7 +19,7 @@ const commonStreamingCall = streamToObservable(
   exampleClient.exampleExample.exampleCommonStreamingCall
 );
 
-export function GrpcWebExample() {
+export function GrpcGatewayExample() {
   const [userInput, setUserInput] = useState("echo msg");
   const [grpcResponse, setGrpcResponse] = useState("");
   const [grpcStreamResponse, setGrpcStreamResponse] = useState<string[]>([]);
@@ -67,35 +70,54 @@ export function GrpcWebExample() {
       <button
         style={{ marginBottom: "30px" }}
         onClick={() => {
-          const req: CommonCommonRequest = {
-            msg: userInput,
-            type: CommonCommonType.JSON,
+          const makeStreamCall = (
+            id: number,
+            onMsgCallBack?: (reply: CommonCommonReply) => void
+          ) => {
+            const req: CommonCommonRequest = {
+              msg: LARGE_MESSAGE,
+              type: CommonCommonType.JSON,
+            };
+            const startTime = new Date().getTime();
+            commonStreamingCall(req).subscribe({
+              next: (resp) => {
+                onMsgCallBack?.(resp);
+                console.log({
+                  fn: "commonStreamingCall",
+                  event: "data",
+                  id,
+                  data: resp,
+                });
+              },
+              complete: () => {
+                console.log(
+                  `Completion Time: ${new Date().getTime() - startTime}`
+                );
+                console.log({
+                  fn: "commonStreamingCall",
+                  event: "end",
+                  id,
+                  data: null,
+                });
+              },
+              error: (err) => {
+                console.log({
+                  fn: "commonStreamingCall",
+                  event: "error",
+                  id,
+                  data: err,
+                });
+              },
+            });
           };
           setGrpcStreamResponse([]);
-          commonStreamingCall(req).subscribe({
-            next: (resp) => {
-              setGrpcStreamResponse((prev) => [...prev, resp?.msg || ""]);
-              console.log({
-                fn: "commonStreamingCall",
-                event: "data",
-                data: resp,
-              });
-            },
-            complete: () => {
-              console.log({
-                fn: "commonStreamingCall",
-                event: "end",
-                data: null,
-              });
-            },
-            error: (err) => {
-              console.log({
-                fn: "commonStreamingCall",
-                event: "error",
-                data: err,
-              });
-            },
+          makeStreamCall(0, (resp) => {
+            setGrpcStreamResponse((prev) => [...prev, resp.type || ""]);
           });
+          // see how many more streams can be opened (on Edge: version 132.0.2957.127 this caps at 6)
+          // for (let i = 1; i < 10; i++) {
+          //   makeStreamCall(i);
+          // }
         }}
       >
         GRPC Stream RPC Call

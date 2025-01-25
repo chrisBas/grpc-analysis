@@ -39,9 +39,9 @@ func (* exampleServer) ExampleStreamingCall(req *example.ExampleRequest, stream 
 		return nil
 	}
 
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 60*11; i++ {
 		stream.Send(&example.ExampleReply{Msg: fmt.Sprintf("echo: %s (%d)", req.Msg, i)})
-		time.Sleep(time.Millisecond * 500)
+		time.Sleep(time.Millisecond * 1000)
 	}
 
 	// not needed, but will be send with the final response code when the stream is closed
@@ -71,9 +71,9 @@ func (* exampleServer) CommonStreamingCall(req *common.CommonRequest, stream exa
 		return nil
 	}
 
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 1000; i++ {
 		stream.Send(&common.CommonReply{Msg: fmt.Sprintf("echo: %s (%d)", req.Msg, i), Type: req.Type})
-		time.Sleep(time.Millisecond * 500)
+		time.Sleep(time.Millisecond * 10)
 	}
 
 	// not needed, but will be send with the final response code when the stream is closed

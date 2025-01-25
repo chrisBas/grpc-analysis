@@ -2,12 +2,14 @@ import { CommonRequest, CommonType } from "generated";
 import { ExampleClient } from "generated/ExampleServiceClientPb";
 import { useState } from "react";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LARGE_MESSAGE = "a".repeat(1000000);
 const exampleClient = new ExampleClient("http://localhost:8080", null, null);
 
 export function GrpcWebExample() {
   const [userInput, setUserInput] = useState("echo msg");
   const [grpcResponse, setGrpcResponse] = useState("");
-  const [grpcStreamResponse, setGrpcStreamResponse] = useState<string[]>([]);
+  const [grpcStreamResponse, setGrpcStreamResponse] = useState<(number | string)[]>([]);
 
   return (
     <div>
@@ -55,6 +57,7 @@ export function GrpcWebExample() {
           const req = new CommonRequest();
           req.setMsg(userInput);
           req.setType(CommonType.JSON);
+          const startTime = new Date().getTime();
           const stream = exampleClient.commonStreamingCall(req);
           setGrpcStreamResponse([]);
           stream.on("data", (resp) => {
@@ -66,6 +69,9 @@ export function GrpcWebExample() {
             });
           });
           stream.on("status", (status) => {
+            console.log(
+              `Completion Time: ${new Date().getTime() - startTime}`
+            );
             console.log({
               fn: "commonStreamingCall",
               event: "status",
@@ -80,6 +86,9 @@ export function GrpcWebExample() {
             });
           });
           stream.on("end", () => {
+            console.log(
+              `Completion Time: ${new Date().getTime() - startTime}`
+            );
             console.log({
               fn: "commonStreamingCall",
               event: "end",

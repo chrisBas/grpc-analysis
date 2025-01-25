@@ -1,13 +1,22 @@
 # Analysis
 
-| GRPC SPEC | Language | Description | Descriptive Analysis | Performance | Streaming |
-| --- | --- | --- | --- | --- | --- |
-| grpc-web | JS | - | I prefer TS to JS | TBD | TBD |
-| grpc-web | TS | using protoc grpc-web | Annoying to work with; generated TS has to be in separate Package | TBD | TBD |
-| grpc-web | TS | using protoc protobuf-ts | Good, but requires Envoy Proxy | TBD | TBD |
-| grpc-gateway | TS | - | Good, but requires Grpc-Gateway Proxy | TBD | TBD |
+As a part of the analysis, I will be comparing:
 
-# Running grpc-gateway Locally
+- Descriptive Analysis - a general take on if it is good/bad and why i think so
+- Performance Large Msg - Sening/Receiving ~1MB (to an echo service) to see how fast it is for reuqests/responses (including serialization)
+- Performance Small Msg - Sening/Receiving ~400Bytes (to an echo service) to see how fast it is for reuqests/responses (including serialization)
+- 11mins of Streaming - I chose 11 minutes to see if there were any blockers preventing the stream from running for a *long time*, this also tells the kB returned for a basic response of {msg:string, type: int/enum} for comparrison purposes
+- Max # of Streams - this is to determine any browser limits to how many streams can be running at a given time
+
+| GRPC SPEC | Language | Extra Server | Description | Descriptive Analysis | Performance Large Msg | Performance Small Msg | 11mins of Streaming | Max # of Streams |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| grpc-web | JS | Envoy | - | I prefer TS to JS | TBD | TBD | Success (28.2kB) | 6 (MS Edge v132.0.2957.127) |
+| grpc-web | TS | Envoy | using protoc grpc-web | Annoying to work with; generated TS has to be in separate Package | -Request Fails- | TBD | Success (28.2kB) | 6 (MS Edge v132.0.2957.127) |
+| grpc-web | TS | Envoy | using protoc protobuf-ts | Good, but requires Envoy Proxy | 19.273MB/s (1,333MB/69.164s) | 4.14kB/s (42.4kB/10.24s) | Success (28.2kB) | 6 (MS Edge v132.0.2957.127) |
+| grpc-web | TS | Grpc-Web Go Proxy | using protoc protobuf-ts | Good, but requires Grpc-Web Go Proxy | 21.457MB/s (1,333MB/62.123s) | 4.14kB/s (42.4kB/10.24s) | Success (28.2kB) | 6 (MS Edge v132.0.2957.127) |
+| grpc-gateway | TS | Grpc-Gateway Go Proxy | - | Good, but requires Grpc-Gateway Go Proxy | 84.147MB/s (1,000MB/11.884s) | 5.95kB/s (62.3kB/10.47s) | Success (41.3kB) | 6 (MS Edge v132.0.2957.127) |
+
+# Running grpc-gateway Locally with Grpc-Gateway Proxy
 
 ```
 # Generate Protobuf files for go and js
@@ -35,7 +44,7 @@ go mod download
 go run *.go
 ```
 
-# Running grpc-web-web Locally
+# Running grpc-web-web Locally with Envoy
 
 ```
 # Generate Protobuf files for go and js
@@ -77,6 +86,51 @@ go mod download
 go run *.go
 ```
 
+# Running grpc-web-web Locally with Envoy
+
+```
+# Generate Protobuf files for go and js
+./gen_go_server.sh
+./gen_grpc_web.sh
+
+# grpc-web go proxy (this is installed separate from the apps in this repo)
+cd ../
+git clone git@github.com:improbable-eng/grpc-web.git grpc-web-go-proxy
+cd grpc-web-go-proxy
+go install ./go/grpcwebproxy
+grpcwebproxy --backend_addr=localhost:9090 --run_tls_server=false --allow_all_origins --server_http_max_write_timeout=3600s
+
+# client (JS) - only use if you are running the JS client ofcourse
+cd grpc-web/js
+# install dependencies
+npm i
+# build client files
+npm run build
+# host static files (using python http-server)
+npm start
+
+# client (TS) - only use if you are running the TS client ofcourse
+cd grpc-web/ts
+# install dependencies
+yarn install
+# run dev server with vite (yarn is needed b/c we use 'link:' in package.json)
+yarn run dev
+
+# client (TS2) - only use if you are running the TS2 client ofcourse
+cd grpc-web/ts2
+# install dependencies
+npm i
+# run dev server with vite
+npm run dev
+
+# server
+cd go-server
+# install dependencies
+go mod download
+# run server
+go run *.go
+```
+
 ## References
 
 - [grpc-web](https://github.com/grpc/grpc-web)
@@ -84,3 +138,6 @@ go run *.go
 - [grpc-web typescript](https://github.com/grpc/grpc-web/blob/master/net/grpc/gateway/examples/echo/ts-example/README.md)
 - [grpc-web vite](https://github.com/a2not/vite-grpc-web)
 - _neat to know_ [multiple go versions](https://go.dev/doc/manage-install)
+- [installing envoy locally](https://www.envoyproxy.io/docs/envoy/latest/start/install)
+- [running envoy locally](https://www.envoyproxy.io/docs/envoy/latest/start/quick-start/run-envoy)
+- [grpc-web-proxy in go](https://github.com/improbable-eng/grpc-web/tree/master/go/grpcwebproxy)

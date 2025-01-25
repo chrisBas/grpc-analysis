@@ -1,12 +1,12 @@
 import "./App.css";
-import { GrpcWebExample } from "./GrpcWebExample";
+import { GrpcGatewayExample } from "./GrpcGatewayExample";
 
 function App() {
   return (
     <>
       <h1>Vite + React + Grpc-Gateway</h1>
       <div className="card">
-        <GrpcWebExample />
+        <GrpcGatewayExample />
       </div>
     </>
   );
