@@ -34,6 +34,7 @@ go run *.go
 ./gen_grpc_web.sh
 
 # envoy
+cd grpc-web/envoy
 ./run_envoy_in_docker.sh
 
 # client (JS) - only use if you are running the JS client ofcourse
