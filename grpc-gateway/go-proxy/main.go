@@ -1,10 +1,13 @@
 package main
 
 import (
+	"compress/gzip"
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"net/http"
+	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -41,7 +44,33 @@ import (
   }
 
   func middleware(next http.Handler) http.Handler {
-	return cors(next)
+	return gzipMiddleware(cors(next))
+}
+
+func gzipMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+            gz := gzip.NewWriter(w)
+            defer gz.Close()
+            w.Header().Set("Content-Encoding", "gzip")
+            w = gzipResponseWriter{Writer: gz, ResponseWriter: w}
+        }
+        next.ServeHTTP(w, r)
+    })
+}
+
+type gzipResponseWriter struct {
+    io.Writer
+    http.ResponseWriter
+}
+
+func (w gzipResponseWriter) Write(b []byte) (int, error) {
+    return w.Writer.Write(b)
+}
+
+func (w gzipResponseWriter) Flush() {
+	w.Writer.(*gzip.Writer).Flush()
+	w.ResponseWriter.(http.Flusher).Flush()
 }
 
   func cors(h http.Handler) http.Handler {

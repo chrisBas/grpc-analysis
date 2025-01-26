@@ -7,6 +7,7 @@ import (
 	"server/pb/example"
 
 	"google.golang.org/grpc"
+	_ "google.golang.org/grpc/encoding/gzip"
 )
 
 func main() {
