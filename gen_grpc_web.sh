@@ -26,3 +26,11 @@ protoc -I proto \
   --ts_out grpc-web/ts2/src/generated \
   example.proto common.proto
   
+  # For node web-client
+mkdir -p grpc-web/node/src/generated
+rm -f grpc-web/node/src/generated/*.ts
+protoc -I proto \
+  --ts_opt eslint_disable \
+  --ts_out grpc-web/node/src/generated \
+  example.proto common.proto
+  
