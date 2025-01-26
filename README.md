@@ -1,3 +1,9 @@
+# Verdict
+
+Grpc-Gateway is the best option for a setup where the client is the browser.  This is counter-intuitive because grpc-web is binary and should have a larger compression and should be able to be handled simpler but this is not the case for several reasons.  These reasons include: browsers use base64 encoded strings and have to be deserialized to binary before they can be processed by the client, maybe the browser is buffering a lot of the data before it can be processed, and to make matters worse when trying to optimize, grpc-web cannot utilize compression like gzip currently - so in cases where we are sending large amounts of data, grpc-web is not the best option.
+
+It also appears from testing directly in node compared with the browser that the browser is adding signficant delays to the grpc-web responses; node was completing the same request in ~30s that the browser was taking ~60sec for.  Beyond that, i did a quick test to check if maybe it was base64 to binary to js objects that was taking up the time and in the same amount of responses (1000 request at 1MB per) it appears deserializing base64 to binary to js objects is not the issue as it was taking a total time of ~2587ms.
+
 # Analysis
 
 As a part of the analysis, I will be comparing:
