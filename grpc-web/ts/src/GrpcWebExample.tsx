@@ -4,7 +4,7 @@ import { useState } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LARGE_MESSAGE = "a".repeat(1000000);
-const exampleClient = new ExampleClient("http://localhost:8080", null, null);
+const exampleClient = new ExampleClient("http://localhost:8090", null, null);
 
 export function GrpcWebExample() {
   const [userInput, setUserInput] = useState("echo msg");

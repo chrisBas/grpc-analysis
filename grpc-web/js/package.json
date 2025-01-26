@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack ./client.js",
-    "start": "python3 -m http.server 8081"
+    "start": "python3 -m http.server 8082"
   },
   "author": "",
   "license": "ISC",

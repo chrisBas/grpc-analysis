@@ -5,7 +5,9 @@ const {
 const { CommonRequest, CommonType } = require("./pb/example/common_pb.js");
 const { ExampleClient } = require("./pb/example/example_grpc_web_pb.js");
 
-var client = new ExampleClient("http://" + window.location.hostname + ":8080", null, null);
+var client = new ExampleClient("http://" + window.location.hostname + ":8090", null, null);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LARGE_MESSAGE = "a".repeat(1000000);
 
 // This is so the GRPC Chrome Plugin can be used to debug the client
 // TODO: this should be turned off optionally (in prod, maybe dev) via a build flag

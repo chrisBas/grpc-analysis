@@ -6,7 +6,7 @@ import { ExampleClient } from "./generated/example.client";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LARGE_MESSAGE = "a".repeat(1000000);
 const transport = new GrpcWebFetchTransport({
-  baseUrl: "http://localhost:8080",
+  baseUrl: "http://localhost:8090",
 });
 const exampleClient = new ExampleClient(transport);
 

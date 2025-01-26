@@ -10,7 +10,7 @@ As a part of the analysis, I will be comparing:
 
 | GRPC SPEC | Language | Extra Server | Description | Descriptive Analysis | Performance Large Msg | Performance Small Msg | 11mins of Streaming | Max # of Streams |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| grpc-web | JS | Envoy | - | I prefer TS to JS | TBD | TBD | Success (28.2kB) | 6 (MS Edge v132.0.2957.127) |
+| grpc-web | JS | Envoy | - | I prefer TS to JS | -Request Fails- | 4.102kB/s (42.0kB/10.24s) | Success (28.2kB) | 6 (MS Edge v132.0.2957.127) |
 | grpc-web | TS | Envoy | using protoc grpc-web | Annoying to work with; generated TS has to be in separate Package | -Request Fails- | TBD | Success (28.2kB) | 6 (MS Edge v132.0.2957.127) |
 | grpc-web | TS | Envoy | using protoc protobuf-ts | Good, but requires Envoy Proxy | 19.273MB/s (1,333MB/69.164s) | 4.14kB/s (42.4kB/10.24s) | Success (28.2kB) | 6 (MS Edge v132.0.2957.127) |
 | grpc-web | TS | Grpc-Web Go Proxy | using protoc protobuf-ts | Good, but requires Grpc-Web Go Proxy | 21.457MB/s (1,333MB/62.123s) | 4.14kB/s (42.4kB/10.24s) | Success (28.2kB) | 6 (MS Edge v132.0.2957.127) |
