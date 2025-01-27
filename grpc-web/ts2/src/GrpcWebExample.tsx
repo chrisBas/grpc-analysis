@@ -1,6 +1,7 @@
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { useState } from "react";
 import { CommonReply, CommonRequest, CommonType } from "./generated/common";
+import { ExampleRequest } from "./generated/example";
 import { ExampleClient } from "./generated/example.client";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -117,6 +118,39 @@ export function GrpcWebExample() {
           return <div key={i}>{res}</div>;
         })}
       </div>
+      <button
+        style={{ marginBottom: "30px" }}
+        onClick={() => {
+          const bidiStream = exampleClient.exampleStreamingCall();
+          bidiStream.responses.onMessage((resp) => {
+            console.log({
+              fn: "exampleStreamingCall",
+              event: "data",
+              data: resp,
+            });
+          });
+          bidiStream.responses.onComplete(() => {
+            console.log({
+              fn: "exampleStreamingCall",
+              event: "end",
+              data: null,
+            });
+          });
+          bidiStream.responses.onError((err) => {
+            console.log({
+              fn: "exampleStreamingCall",
+              event: "error",
+              data: err,
+            });
+          });
+          const req: ExampleRequest = {
+            msg: "bidi stream",
+          };
+          bidiStream.requests.send(req);
+        }}
+      >
+        GRPC Bidi Stream (NOT SUPPORTED IN GRPC-WEB)
+      </button>
     </div>
   );
 }

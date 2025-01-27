@@ -14,7 +14,7 @@ message ExampleReply {
 
 service Example {
   rpc ExampleUnaryCall(ExampleRequest) returns (ExampleReply);
-  rpc ExampleStreamingCall(ExampleRequest) returns (stream ExampleReply);
+  rpc ExampleStreamingCall(stream ExampleRequest) returns (stream ExampleReply);
   
   rpc CommonUnaryCall(common.CommonRequest) returns (common.CommonReply);
   rpc CommonStreamingCall(common.CommonRequest) returns (stream common.CommonReply);

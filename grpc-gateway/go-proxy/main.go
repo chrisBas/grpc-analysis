@@ -15,6 +15,8 @@ import (
 	"google.golang.org/grpc/grpclog"
 
 	gw "gateway/pb/gateway"
+
+	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 )
   
   var (
@@ -44,7 +46,7 @@ import (
   }
 
   func middleware(next http.Handler) http.Handler {
-	return gzipMiddleware(cors(next))
+	return cors(wsproxy.WebsocketProxy(gzipMiddleware(next)))
 }
 
 func gzipMiddleware(next http.Handler) http.Handler {

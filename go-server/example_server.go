@@ -24,7 +24,7 @@ func newExampleServer() example.ExampleServer {
 func (* exampleServer) ExampleUnaryCall(ctx context.Context, req *example.ExampleRequest) (*example.ExampleReply, error) {
 	return &example.ExampleReply{Msg: "echo: " + req.Msg}, nil
 }
-func (* exampleServer) ExampleStreamingCall(req *example.ExampleRequest, stream example.Example_ExampleStreamingCallServer) error {
+func (* exampleServer) ExampleStreamingCall(stream example.Example_ExampleStreamingCallServer) error {
 	ctx := stream.Context()
 	if header, ok := metadata.FromIncomingContext(ctx); ok {
 		if v, ok := header["error"]; ok {
@@ -39,18 +39,25 @@ func (* exampleServer) ExampleStreamingCall(req *example.ExampleRequest, stream 
 		return nil
 	}
 
-	for i := 1; i <= 60*11; i++ {
-		stream.Send(&example.ExampleReply{Msg: fmt.Sprintf("echo: %s (%d)", req.Msg, i)})
-		time.Sleep(time.Millisecond * 1000)
-	}
-
 	// not needed, but will be send with the final response code when the stream is closed
 	stream.SetTrailer(metadata.New(map[string]string{
 		"status": "ok",
 	}))
 
 	// return nil to close stream successfully
-	return nil
+	count := 0
+	for {
+		req := &example.ExampleRequest{}
+		err := stream.RecvMsg(req)
+		if err != nil{
+			fmt.Printf("stream closed: %v (req: %v)\n", err, req)
+			return nil
+		} else {
+			stream.Send(&example.ExampleReply{Msg: fmt.Sprintf("echo: %s (%d)", req.Msg, count)})
+			count++
+		}
+
+	}
 }
 
 func (* exampleServer) CommonUnaryCall(ctx context.Context, req *common.CommonRequest) (*common.CommonReply, error) {
@@ -71,7 +78,7 @@ func (* exampleServer) CommonStreamingCall(req *common.CommonRequest, stream exa
 		return nil
 	}
 
-	for i := 1; i <= 1000; i++ {
+	for i := 1; i <= 200; i++ {
 		stream.Send(&common.CommonReply{Msg: fmt.Sprintf("echo: %s (%d)", req.Msg, i), Type: req.Type})
 		time.Sleep(time.Millisecond * 10)
 	}
