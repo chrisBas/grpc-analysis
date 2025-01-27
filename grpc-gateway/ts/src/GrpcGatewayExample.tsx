@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Observable } from "rxjs";
 import {
   Api,
@@ -27,7 +27,7 @@ export function GrpcGatewayExample() {
   const [grpcStreamResponse, setGrpcStreamResponse] = useState<string[]>([]);
   const [grpcWebsocketStreamResponse, setGrpcWebsocketStreamResponse] =
     useState<ExampleExampleReply[]>([]);
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [sockets, setSockets] = useState<WebSocket[]>([]);
 
   return (
     <div>
@@ -136,66 +136,72 @@ export function GrpcGatewayExample() {
       <button
         style={{
           marginBottom: "30px",
-          backgroundColor: socket === null ? "green" : "red",
+          backgroundColor: sockets.length === 0 ? "green" : "red",
         }}
         onClick={() => {
-          if (socket === null) {
-            const socket = new WebSocket(
-              "ws://localhost:8080/example.Example/ExampleStreamingCall?method=POST"
-            );
+          if (sockets.length === 0) {
+            for (let i = 1; i <= 1; i++) {
+              const socket = new WebSocket(
+                "ws://localhost:8080/example.Example/ExampleStreamingCall?method=POST"
+              );
 
-            // Handle connection open
-            socket.onopen = () => {
-              console.log({
-                fn: "example.Example/ExampleStreamingCall",
-                event: "onopen",
-                data: null,
-              });
-              const req: ExampleExampleRequest = {
-                msg: userInput,
+              // Handle connection open
+              socket.onopen = () => {
+                console.log({
+                  fn: "example.Example/ExampleStreamingCall",
+                  event: "onopen",
+                  data: null,
+                  socket: i,
+                });
+                const req: ExampleExampleRequest = {
+                  msg: userInput,
+                };
+                socket.send(JSON.stringify(req));
               };
-              socket.send(JSON.stringify(req));
-            };
 
-            // Handle incoming messages
-            socket.onmessage = (event) => {
-              console.log({
-                fn: "example.Example/ExampleStreamingCall",
-                event: "onmessage",
-                data: event.data,
-              });
-              setGrpcWebsocketStreamResponse((prev) => [
-                ...prev,
-                JSON.parse(event.data).result,
-              ]);
-            };
+              // Handle incoming messages
+              socket.onmessage = (event) => {
+                console.log({
+                  fn: "example.Example/ExampleStreamingCall",
+                  event: "onmessage",
+                  data: event.data,
+                  socket: i,
+                });
+                setGrpcWebsocketStreamResponse((prev) => [
+                  ...prev,
+                  JSON.parse(event.data).result,
+                ]);
+              };
 
-            // Handle connection errors
-            socket.onerror = (error) => {
-              console.log({
-                fn: "example.Example/ExampleStreamingCall",
-                event: "onerror",
-                data: error,
-              });
-            };
+              // Handle connection errors
+              socket.onerror = (error) => {
+                console.log({
+                  fn: "example.Example/ExampleStreamingCall",
+                  event: "onerror",
+                  data: error,
+                  socket: i,
+                });
+              };
 
-            // Handle connection close
-            socket.onclose = () => {
-              console.log({
-                fn: "example.Example/ExampleStreamingCall",
-                event: "onclose",
-                data: null,
-              });
-              setSocket(null);
-              setGrpcWebsocketStreamResponse([]);
-            };
-            setSocket(socket);
+              // Handle connection close
+              socket.onclose = () => {
+                console.log({
+                  fn: "example.Example/ExampleStreamingCall",
+                  event: "onclose",
+                  data: null,
+                  socket: i,
+                });
+                setSockets((prev) => prev.filter((s) => s !== socket));
+                setGrpcWebsocketStreamResponse([]);
+              };
+              setSockets((prev) => [...prev, socket]);
+            }
           } else {
-            socket.close();
+            sockets.forEach((socket) => socket.close());
           }
         }}
       >
-        {socket === null
+        {sockets.length === 0
           ? "Connect to GRPC Websocket Stream"
           : "Disonnect to GRPC Websocket Stream"}
       </button>
@@ -206,9 +212,11 @@ export function GrpcGatewayExample() {
             const req: ExampleExampleRequest = {
               msg: userInput,
             };
-            socket!.send(JSON.stringify(req));
+            sockets.forEach((socket) => {
+              socket.send(JSON.stringify(req));
+            });
           }}
-          disabled={socket === null}
+          disabled={sockets.length === 0}
         >
           Send Message to Websocket Stream
         </button>

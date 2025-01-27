@@ -4,6 +4,8 @@ Grpc-Gateway is the best option for a setup where the client is the browser.  Th
 
 It also appears from testing directly in node compared with the browser that the browser is adding signficant delays to the grpc-web responses; node was completing the same request in ~30s that the browser was taking ~60sec for.  Beyond that, i did a quick test to check if maybe it was base64 to binary to js objects that was taking up the time and in the same amount of responses (1000 request at 1MB per) it appears deserializing base64 to binary to js objects is not the issue as it was taking a total time of ~2587ms.
 
+As far as Bi-Directional Streaming (AKA Bidi) goes, neither grpc-web nor grpc-gateway support this.  However; there is a nice grpc-gateway go library that requires 2 lines of code in the grpc-gateway go proxy code to enable web-sockets.  This is a nice feature and is a plus for grpc-gateway.  But, because unidirectional streams are supported by both grpc-web and grpc-gateway and this is from the server to the client, this alone is not a reason to choose grpc-gateway over grpc-web.  That said, the ability to use web-sockets does mean we can get past the 6-stream max hard limit that browsers have for HTTP 1.
+
 # Analysis
 
 As a part of the analysis, I will be comparing:
